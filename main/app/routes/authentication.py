@@ -1,14 +1,21 @@
 #this will contain the signup and login
-from fastapi import APIRouter,status,Depends,HTTPException
+from fastapi import APIRouter,status,Depends,HTTPException,Form
 from ..database import database
 from ..models import user_models
 from passlib.context import CryptContext
 from ..schemas import signup_schemas
 from sqlalchemy.orm import Session
+from typing import Annotated
+from pydantic import EmailStr,Field
+from datetime import timedelta
+from ..dependencies import user_oauth2
 
 router = APIRouter(
     tags=['Signup/Login']
 )
+
+# the token will expire after 24 hours
+ACCESS_TOKEN_EXPIRE_HOUR = 24
 
 # encyrpt the user password
 
@@ -31,7 +38,7 @@ def get_user_email(db, email):
     return user
 
 
-
+#signup
 @router.post('/register',
     status_code=status.HTTP_201_CREATED,
     response_model=signup_schemas.ShowUser,
@@ -47,9 +54,9 @@ def register(user:signup_schemas.UserSignUp, db: Session=Depends(database.get_db
         Role = user.Role, Gender = user.Gender
     )
 
-    # check if the user entered the correct password
-    if user.password != user.confirm_password:
-        raise HTTPException(status_code=400, detail="Passwords do not match")
+    # # check if the user entered the correct password
+    # if user.password != user.confirm_password:
+    #     raise HTTPException(status_code=400, detail="Passwords do not match")
 
     # check if useremail already exist in the database
     existed_user = get_user_email(db, user.Onpassive_Email)
@@ -64,3 +71,54 @@ def register(user:signup_schemas.UserSignUp, db: Session=Depends(database.get_db
 
 
     return new_user
+
+@router.post('/login',
+    summary="Login and generate JWT token with type and user id",
+    description='''Authenticate a user by checking the email and password
+    against the database. If valid,
+    generate and return a JWT access token and type''',
+    responses={404: {"description": "Invalid credentials or password"}}
+             )
+
+def user_login(Email_ID:Annotated[EmailStr,Form()], password:Annotated[str,Form()],
+               db: Session = Depends(database.get_db)):
+    """Get the useremail and password check it in the.
+    database and create and return a jwt token"""
+    # check if the username enter is in the database
+    user_details = (
+        db.query(user_models.User).filter(user_models.User.Onpassive_Email == Email_ID).first()
+    )
+
+    # if the user email is not in the database
+    if not user_details:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Credentials"
+        )
+
+    # verify the password
+    if not Hash.verify(user_details.password, password):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Invalid password"
+        )
+
+    user_id = user_details.id  # current user_id
+
+    # if the useremail is in the database and the password is verified
+    # set the time the token will exipre
+    access_token_expire = timedelta(
+        hours=ACCESS_TOKEN_EXPIRE_HOUR
+    )  # then the user will have to login again
+    # #generate the jwt token
+    # #by passing in the data and the expire token time
+    access_token = user_oauth2.create_access_token(
+        data={
+            "sub": Email_ID, "id": user_id
+            }, expires_delta=access_token_expire
+    )
+    
+    return {
+        "token": access_token,
+        "type": "bearer",
+        "user_id": user_id,
+    }
+

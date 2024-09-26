@@ -11,8 +11,8 @@ class UserSignUp(BaseModel):
     Gender: str = Field(default='girl')
     Onpassive_Email: EmailStr = Field(default='precious@gmail.com')
     password: str = Field(default='123htinx vh6^%^',min_length=7)
-    confirm_password: str = Field(default='123htinx vh6^%^')
-    Contact_No: int =  Field(default=12345678)  
+    # confirm_password: str = Field(default='123htinx vh6^%^')
+    Contact_No: str =  Field(default="13838494093")  
     Role: str = Field(default='Backend')
     
     
