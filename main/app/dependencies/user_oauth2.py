@@ -63,7 +63,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
         {"expire": str(expire)}
     )  # updating the data to have the expire keyword and expire time
     # encode the data(to_encode)
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithms=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, ALGORITHM)
     return encoded_jwt
 
 # verify the token
