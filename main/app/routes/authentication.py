@@ -49,26 +49,46 @@ def get_user_email(db, email):
              )
 def register(user:signup_schemas.UserSignUp, db: Session=Depends(database.get_db)):
     new_user = user_models.User(
-        First_Name =user.First_Name, Last_Name=user.Last_Name, Date_Of_Birth=user.Date_Of_Birth, 
-        Onpassive_Email=user.Onpassive_Email, password=Hash.bcrypt(user.password), Contact_No = user.Contact_No,
+        First_Name =user.First_Name, Last_Name=user.Last_Name,
+        Date_Of_Birth=user.Date_Of_Birth, 
+        Onpassive_Email=user.Onpassive_Email, password=Hash.bcrypt(user.password), 
+        Contact_No = user.Contact_No,
         Role = user.Role, Gender = user.Gender
     )
-
-    # # check if the user entered the correct password
-    # if user.password != user.confirm_password:
-    #     raise HTTPException(status_code=400, detail="Passwords do not match")
-
+    
+    
     # check if useremail already exist in the database
     existed_user = get_user_email(db, user.Onpassive_Email)
     if existed_user:
         raise HTTPException(
             status_code=409, detail="This email already exists"
             )
-
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    employee_unique_id = "KODE1" + str(new_user.id)
+    # Create the Account details table when the user register
+    new_user_account_details = user_models.UserAccount(
+        Employee_ID= employee_unique_id ,  # Set the firstname from the User table
+        Official_Email_ID=user.Onpassive_Email,
+        First_Name=user.First_Name,
+        Last_Name=user.Last_Name,  
+        Gender = user.Gender,
+        Phone_Number = user.Contact_No,
+        Role = user.Role,
+        user = new_user #establish the relationship
+        )
+    
+    db.add(new_user_account_details)
+    db.commit()
+    db.refresh(new_user_account_details)
 
+    
+    # # check if the user entered the correct password
+    # if user.password != user.confirm_password:
+    #     raise HTTPException(status_code=400, detail="Passwords do not match")
 
     return new_user
 
@@ -111,9 +131,7 @@ def user_login(Email_ID:Annotated[EmailStr,Form()], password:Annotated[str,Form(
     # #generate the jwt token
     # #by passing in the data and the expire token time
     access_token = user_oauth2.create_access_token(
-        data={
-            "sub": Email_ID, "id": user_id
-            }, expires_delta=access_token_expire
+        data={"sub": Email_ID, "id": user_id}, expires_delta=access_token_expire
     )
     
     return {

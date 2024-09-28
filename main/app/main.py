@@ -26,6 +26,7 @@ app.add_middleware(
 async def main():
     return {"message": "Hello to the attendance management system"}
 
+
 #creating the tables
 user_models.database.Base.metadata.create_all(bind=database.engine)
 
