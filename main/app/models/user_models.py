@@ -35,7 +35,7 @@ class UserAccount(database.Base):
     Official_Email_ID = Column(String, ForeignKey("AMS_users.Onpassive_Email"), unique=True)
     First_Name= Column(String)
     Last_Name = Column(String)
-    Date_Of_Birth = Column(Date)
+    Date_Of_Birth = Column(Date, default=date(2005, 10, 12))
     Gender = Column(String)
     Phone_Number = Column(String)
     Role = Column(String)
