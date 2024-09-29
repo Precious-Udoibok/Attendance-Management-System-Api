@@ -1,4 +1,4 @@
-from ..database.config import SECRET_KEY, ALGORITHM
+# from ..database.config import SECRET_KEY, ALGORITHM
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from json import dumps
@@ -6,8 +6,8 @@ from datetime import timezone, timedelta, datetime, date
 from fastapi import HTTPException,status,Depends
 # from jwt.api_jwt import encode,
 
-# ALGORITHM = "HS256"
-# SECRET_KEY = "32c746fa44e4f23f19ae95b309affc9a7fcffc9511b42d080e4497a7face4d8e"
+ALGORITHM = "HS256"
+SECRET_KEY = "32c746fa44e4f23f19ae95b309affc9a7fcffc9511b42d080e4497a7face4d8e"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
@@ -71,7 +71,7 @@ def verify_token(token: str, credentials_exceptions):
     try:
         print(ALGORITHM)
         # decode the data using the token, secret key and the algorithm
-        payload = jwt.decode(token, SECRET_KEY,algorithms=[ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY,algorithms=["HS256"])
         print(payload)
         email = payload.get("sub")  # extracts the username from the payload
         user_id = payload.get("id")  # extracts the user id
