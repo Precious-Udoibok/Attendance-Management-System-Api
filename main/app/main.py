@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import authentication,aacount_details
+from .routes import authentication,aacount_details,password_route
 from .models import user_models
 from .database import database
 
@@ -35,3 +35,4 @@ user_models.database.Base.metadata.create_all(bind=database.engine)
 #including all the routers 
 app.include_router(authentication.router)
 app.include_router(aacount_details.router)
+app.include_router(password_route.router)
