@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field,EmailStr
 from datetime import date
 from typing import Optional
 from fastapi.encoders import jsonable_encoder
-
+from .profile_picture_schemas import ProfilePic,ShowProfilePIc
 
 
 class UserAccountDetail(BaseModel):
@@ -14,6 +14,7 @@ class UserAccountDetail(BaseModel):
     Gender: str 
     Phone_Number: str 
     Role: str 
+    # user_image: ShowProfilePIc
 
 class Update_UserAccountDetail(BaseModel):
     # Employee_ID: Optional[str] = Field(default='20210002')

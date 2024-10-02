@@ -9,6 +9,7 @@ from typing import Annotated
 from pydantic import EmailStr,Field
 from datetime import timedelta
 from ..dependencies import user_oauth2
+# from ..models.user_models import Profile_Pictures
 
 router = APIRouter(
     tags=['Signup/Login']
@@ -69,6 +70,7 @@ def register(user:signup_schemas.UserSignUp, db: Session=Depends(database.get_db
     db.refresh(new_user)
     
     employee_unique_id = "KODE1" + str(new_user.id)
+    
     # Create the Account details table when the user register
     new_user_account_details = user_models.UserAccount(
         Employee_ID= employee_unique_id ,  # Set the firstname from the User table
@@ -78,7 +80,8 @@ def register(user:signup_schemas.UserSignUp, db: Session=Depends(database.get_db
         Gender = user.Gender,
         Phone_Number = user.Contact_No,
         Role = user.Role,
-        user = new_user #establish the relationship
+        # profile_pictures_id = new_user.id,
+        user = new_user#default_profile_Pic
         )
     
     db.add(new_user_account_details)

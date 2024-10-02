@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import authentication,aacount_details,password_route,profile_pic
+from .routes import authentication,aacount_details,password_route,profile_pic,attendance_report
 from .models import user_models
 from .database import database
 
@@ -37,3 +37,4 @@ app.include_router(authentication.router)
 app.include_router(aacount_details.router)
 app.include_router(password_route.router)
 app.include_router(profile_pic.router)
+app.include_router(attendance_report.router)
