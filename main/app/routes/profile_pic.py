@@ -31,6 +31,8 @@ def get_profile_pic(db:Session=Depends(database.get_db),current_user=Depends(get
     profile_pic = (
         db.query(Profile_Pictures).filter(Profile_Pictures.user_id == current_user).first()
     )
+    if not profile_pic:
+        raise HTTPException(status_code=400, detail="No Profile Pic yet")
     return profile_pic
 
 
