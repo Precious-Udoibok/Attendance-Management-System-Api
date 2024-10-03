@@ -12,8 +12,8 @@ class ATMS_REPORT(database.Base):
     date = Column(Date, nullable=False)
     time_in = Column(Time, nullable=False)
     time_out = Column(Time, nullable=False)
-    break_hours = Column(Interval, nullable=False)
-    working_hours = Column(Interval, nullable=False)
+    break_hours = Column(Time, nullable=False)
+    working_hours = Column(Time, nullable=False)
     # created_at = Column(TIMESTAMP, default="now()")
 
     
