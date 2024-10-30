@@ -19,7 +19,7 @@ class User(database.Base):
     Last_Name = Column(String)
     Date_Of_Birth= Column(Date, default=date(2005, 10, 12))
     Gender = Column(String)
-    Onpassive_Email = Column(String)
+    Onpassive_Email = Column(String, unique=True)
     password = Column(String)
     Contact_No = Column(String)
     Role = Column(String)
